@@ -7,6 +7,7 @@ on:
 
 jobs:
   test:
+    name: Run Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -19,12 +20,13 @@ jobs:
           node-version: 14
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run tests
         run: npm test
 
   deploy:
+    name: Deploy to AWS Elastic Beanstalk
     needs: test
     runs-on: ubuntu-latest
 
@@ -32,22 +34,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: <your AWS region>
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 14
 
-      - name: Configure AWS credentials
-        run: |
-          echo "[default]" >> $HOME/.aws/credentials
-          echo "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY }}" >> $HOME/.aws/credentials
-          echo "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $HOME/.aws/credentials
+      - name: Install dependencies
+        run: npm install
 
-      - name: Build and deploy to AWS Beanstalk
+      - name: Build code
+        run: npm run build
+
+      - name: Zip artifacts
+        run: zip -r deploy.zip .
+
+      - name: Deploy to AWS Elastic Beanstalk
         run: |
-          npm ci
-          npm run build
-          zip -r application.zip .
-          aws s3 cp application.zip s3://YOUR_S3_BUCKET/application.zip
-          aws elasticbeanstalk create-application-version --application-name YOUR_APPLICATION_NAME --version-label $GITHUB_SHA --source-bundle S3Bucket=YOUR_S3_BUCKET,S3Key=application.zip
-          aws elasticbeanstalk update-environment --application-name YOUR_APPLICATION_NAME --environment-name YOUR_ENVIRONMENT_NAME --version-label $GITHUB_SHA
+          aws s3 cp deploy.zip s3://<your-s3-bucket-name>/deploy.zip
+          aws elasticbeanstalk create-application-version --application-name aplikacija --version-label ${{ github.sha }} --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-049716038669,S3Key=deploy.zip
+          aws elasticbeanstalk update-environment --environment-name Proba-env --version-label ${{ github.sha }}
