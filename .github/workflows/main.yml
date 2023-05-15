@@ -50,7 +50,7 @@ jobs:
         run: npm install
 
       - name: Build code
-        run: npm run start
+        run: npm start
 
       - name: Zip artifacts
         run: zip -r deploy.zip .
