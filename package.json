@@ -4,7 +4,7 @@
   "description": "A Static Web App template for Nodejs",
   "main": "server.js",
   "scripts": {
-    "build": "node server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
