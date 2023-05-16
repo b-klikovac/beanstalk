@@ -1,6 +1,6 @@
 {
   "name": "static-web-app",
-  "version": "1.0.0",
+  "version": "14.0.0",
   "description": "A Static Web App template for Nodejs",
   "main": "server.js",
   "scripts": {
