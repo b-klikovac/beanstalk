@@ -59,4 +59,4 @@ jobs:
         run: |
           aws s3 cp deploy.zip s3://<your-s3-bucket-name>/deploy.zip
           aws elasticbeanstalk create-application-version --application-name aplikacija --version-label ${{ github.sha }} --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-049716038669,S3Key=deploy.zip
-          aws elasticbeanstalk update-environment --environment-name Proba-env --version-label ${{ github.sha }}
+          aws elasticbeanstalk update-environment --environment-name Example1-env --version-label ${{ github.sha }}
